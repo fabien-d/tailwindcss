@@ -5,7 +5,9 @@ import substituteTailwindAtRules from './lib/substituteTailwindAtRules'
 import evaluateTailwindFunctions from './lib/evaluateTailwindFunctions'
 import substituteVariantsAtRules from './lib/substituteVariantsAtRules'
 import substituteResponsiveAtRules from './lib/substituteResponsiveAtRules'
+import substituteDarkModeAtRules from './lib/substituteDarkModeAtRules'
 import substituteScreenAtRules from './lib/substituteScreenAtRules'
+import substitutePrefersColorSchemeAtRules from './lib/substitutePrefersColorSchemeAtRules'
 import substituteClassApplyAtRules from './lib/substituteClassApplyAtRules'
 import purgeUnusedStyles from './lib/purgeUnusedStyles'
 
@@ -22,6 +24,8 @@ export default function(getConfig) {
       evaluateTailwindFunctions(config),
       substituteVariantsAtRules(config, processedPlugins),
       substituteResponsiveAtRules(config),
+      substituteDarkModeAtRules(config),
+      substitutePrefersColorSchemeAtRules(config),
       substituteScreenAtRules(config),
       substituteClassApplyAtRules(config, processedPlugins.utilities),
       purgeUnusedStyles(config),
