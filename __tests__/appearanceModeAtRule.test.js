@@ -1,14 +1,14 @@
 import postcss from 'postcss'
-import plugin from '../src/lib/substituteDarkModeAtRules'
+import plugin from '../src/lib/substituteAppearanceModeAtRules'
 import config from '../stubs/defaultConfig.stub.js'
 
 function run(input, opts = config) {
   return postcss([plugin(opts)]).process(input, { from: undefined })
 }
 
-test('it can generate dark mode variants', () => {
+test('it can generate appearance mode variants', () => {
   const input = `
-    @dark-mode {
+    @appearance-mode {
       .banana { color: yellow; }
       .chocolate { color: brown; }
     }

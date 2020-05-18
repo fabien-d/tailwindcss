@@ -26,9 +26,6 @@ test('it can generate media queries from configured prefers-color-scheme', () =>
   `
 
   return run(input, {
-    theme: {
-      'prefers-color-scheme': { light: 'light', dark: 'dark' },
-    },
     separator: ':',
   }).then(result => {
     expect(result.css).toMatchCss(output)

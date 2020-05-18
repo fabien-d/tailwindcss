@@ -11,7 +11,7 @@ export default function(config) {
     const finalRules = []
     const modes = ['dark', 'light']
 
-    css.walkAtRules('dark-mode', atRule => {
+    css.walkAtRules('appearance-mode', atRule => {
       const nodes = atRule.nodes
       darkModeRules.append(...cloneNodes(nodes))
       atRule.before(nodes)
