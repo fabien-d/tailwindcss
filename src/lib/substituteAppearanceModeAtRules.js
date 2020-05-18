@@ -7,13 +7,13 @@ import buildSelectorVariant from '../util/buildSelectorVariant'
 export default function(config) {
   return function(css) {
     const { separator } = config
-    const darkModeRules = postcss.root()
+    const appearanceModeRules = postcss.root()
     const finalRules = []
     const modes = ['dark', 'light']
 
     css.walkAtRules('appearance-mode', atRule => {
       const nodes = atRule.nodes
-      darkModeRules.append(...cloneNodes(nodes))
+      appearanceModeRules.append(...cloneNodes(nodes))
       atRule.before(nodes)
       atRule.remove()
     })
@@ -27,7 +27,7 @@ export default function(config) {
       })
 
       mediaQuery.append(
-        _.tap(darkModeRules.clone(), clonedRoot => {
+        _.tap(appearanceModeRules.clone(), clonedRoot => {
           clonedRoot.walkRules(rule => {
             rule.selectors = _.map(rule.selectors, selector => {
               return buildSelectorVariant(
@@ -46,13 +46,13 @@ export default function(config) {
       finalRules.push(mediaQuery)
     })
 
-    const hasDarkModeRules = finalRules.some(i => i.nodes.length !== 0)
+    const hasAppearanceModeRules = finalRules.some(i => i.nodes.length !== 0)
 
     css.walkAtRules('tailwind', atRule => {
       if (atRule.params !== 'prefers-color-scheme') {
         return
       }
-      if (hasDarkModeRules) {
+      if (hasAppearanceModeRules) {
         atRule.before(finalRules)
       }
       atRule.remove()

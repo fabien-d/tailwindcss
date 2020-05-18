@@ -386,6 +386,29 @@ test('it wraps the output in a responsive at-rule if responsive is included as a
   })
 })
 
+test('it wraps the output in an appearance-mode at-rule if responsive is included as a variant', () => {
+  const input = `
+    @variants appearance-mode, hover {
+      .banana { color: yellow; }
+      .chocolate { color: brown; }
+    }
+  `
+
+  const output = `
+    @appearance-mode {
+      .banana { color: yellow; }
+      .chocolate { color: brown; }
+      .hover\\:banana:hover { color: yellow; }
+      .hover\\:chocolate:hover { color: brown; }
+    }
+  `
+
+  return run(input).then(result => {
+    expect(result.css).toMatchCss(output)
+    expect(result.warnings().length).toBe(0)
+  })
+})
+
 test('variants are generated in the order specified', () => {
   const input = `
     @variants focus, active, hover {
@@ -633,57 +656,6 @@ test('plugin variants can wrap rules in another at-rule using the raw PostCSS AP
           supportsRule.walkRules(rule => {
             rule.selector = `.${e(`supports-grid${separator}${rule.selector.slice(1)}`)}`
           })
-        })
-      },
-    ],
-  }).then(result => {
-    expect(result.css).toMatchCss(output)
-    expect(result.warnings().length).toBe(0)
-  })
-})
-
-test('plugin variants can wrap rules in multiple at-rule using the raw PostCSS API', () => {
-  const input = `
-    @variants prefers-color-scheme {
-      .banana { color: yellow; }
-      .chocolate { color: brown; }
-    }
-  `
-
-  const output = `
-    .banana { color: yellow; }
-    .chocolate { color: brown; }
-    @media (prefers-color-scheme: dark) {
-      .prefers-dark\\:banana { color: yellow; }
-      .prefers-dark\\:chocolate { color: brown; }
-    }
-    @media (prefers-color-scheme: light) {
-      .prefers-light\\:banana { color: yellow; }
-      .prefers-light\\:chocolate { color: brown; }
-    }
-  `
-
-  return run(input, {
-    ...config,
-    plugins: [
-      ...config.plugins,
-      function({ addVariant, e }) {
-        addVariant('prefers-color-scheme', ({ container, separator }) => {
-          const media = ['dark', 'light'].map(mode => {
-            const colorSchemeMedia = postcss.atRule({
-              name: 'media',
-              params: `(prefers-color-scheme: ${mode})`,
-            })
-            // ensure next loop doesn't modify previously modified selectors, breaking nested references could be
-            // achieved differently. Current structure seems to only contain JSON-serializable data
-            colorSchemeMedia.nodes = JSON.parse(JSON.stringify(container.nodes))
-            colorSchemeMedia.walkRules(rule => {
-              rule.selector = `.${e(`prefers-${mode}${separator}${rule.selector.slice(1)}`)}`
-            })
-            return colorSchemeMedia
-          })
-
-          container.nodes = media
         })
       },
     ],
