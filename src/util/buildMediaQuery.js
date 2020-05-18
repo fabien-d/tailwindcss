@@ -15,19 +15,27 @@ export default function buildMediaQuery(screens) {
         return screen.raw
       }
 
-      return _(screen)
+      const v = _(screen)
         .map((value, feature) => {
+          if (feature === 'screen') {
+            return buildMediaQuery(value)
+          }
+
           feature = _.get(
             {
               min: 'min-width',
               max: 'max-width',
+              dark: 'prefers-color-scheme',
             },
             feature,
             feature
           )
+
           return `(${feature}: ${value})`
         })
         .join(' and ')
+
+      return v
     })
     .join(', ')
 }

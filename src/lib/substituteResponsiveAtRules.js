@@ -7,7 +7,7 @@ import buildSelectorVariant from '../util/buildSelectorVariant'
 export default function(config) {
   return function(css) {
     const {
-      theme: { screens },
+      theme: { screens, media },
       separator,
     } = config
     const responsiveRules = postcss.root()
@@ -20,17 +20,40 @@ export default function(config) {
       atRule.remove()
     })
 
-    _.keys(screens).forEach(screen => {
+    let screensAndMedia = _.entries(screens)
+
+    if (media) {
+      screensAndMedia = [
+        ...screensAndMedia,
+        ..._.flatten(
+          _.keys(screens).map(screen => {
+            return _.keys(media).reduce((acc, query) => {
+              acc.push([
+                `${query}&${screen}`,
+                {
+                  [query]: media[query],
+                  screen: screens[screen],
+                },
+              ])
+
+              return acc
+            }, [])
+          })
+        ),
+      ]
+    }
+
+    screensAndMedia.forEach(([key, value]) => {
       const mediaQuery = postcss.atRule({
         name: 'media',
-        params: buildMediaQuery(screens[screen]),
+        params: buildMediaQuery(value),
       })
 
       mediaQuery.append(
         _.tap(responsiveRules.clone(), clonedRoot => {
           clonedRoot.walkRules(rule => {
             rule.selectors = _.map(rule.selectors, selector =>
-              buildSelectorVariant(selector, screen, separator, message => {
+              buildSelectorVariant(selector, key, separator, message => {
                 throw rule.error(message)
               })
             )

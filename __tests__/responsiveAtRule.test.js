@@ -90,6 +90,63 @@ test('it can generate responsive variants with a custom separator', () => {
   })
 })
 
+test('it can generate responsive variants of media keys', () => {
+  const input = `
+    @responsive {
+      .banana { color: yellow; }
+      .chocolate { color: brown; }
+    }
+
+    @tailwind screens;
+  `
+
+  const output = `
+      .banana { color: yellow; }
+      .chocolate { color: brown; }
+      @media (min-width: 500px) {
+        .sm__banana { color: yellow; }
+        .sm__chocolate { color: brown; }
+      }
+      @media (min-width: 750px) {
+        .md__banana { color: yellow; }
+        .md__chocolate { color: brown; }
+      }
+      @media (min-width: 1000px) {
+        .lg__banana { color: yellow; }
+        .lg__chocolate { color: brown; }
+      }
+      @media (prefers-color-scheme: dark) and (min-width: 500px) {
+        .dark\\&sm__banana { color: yellow; }
+        .dark\\&sm__chocolate { color: brown; }
+      }
+      @media (prefers-color-scheme: dark) and (min-width: 750px) {
+        .dark\\&md__banana { color: yellow; }
+        .dark\\&md__chocolate { color: brown; }
+      }
+      @media (prefers-color-scheme: dark) and (min-width: 1000px) {
+        .dark\\&lg__banana { color: yellow; }
+        .dark\\&lg__chocolate { color: brown; }
+      }
+  `
+
+  return run(input, {
+    theme: {
+      screens: {
+        sm: '500px',
+        md: '750px',
+        lg: '1000px',
+      },
+      media: {
+        dark: 'dark',
+      },
+    },
+    separator: '__',
+  }).then(result => {
+    expect(result.css).toMatchCss(output)
+    expect(result.warnings().length).toBe(0)
+  })
+})
+
 test('it can generate responsive variants when classes have non-standard characters', () => {
   const input = `
     @responsive {
