@@ -38,18 +38,9 @@ export default function(
         atRule.name = 'tailwind'
         atRule.params = 'screens'
       }
-
-      if (
-        atRule.params === '"tailwindcss/prefers-color-scheme"' ||
-        atRule.params === "'tailwindcss/prefers-color-scheme'"
-      ) {
-        atRule.name = 'tailwind'
-        atRule.params = 'prefers-color-scheme'
-      }
     })
 
     let includesScreensExplicitly = false
-    let includesPrefersColorSchemeExplicitly = false
 
     css.walkAtRules('tailwind', atRule => {
       if (atRule.params === 'preflight') {
@@ -81,12 +72,6 @@ export default function(
         atRule.before(postcss.comment({ text: 'tailwind start screens' }))
         atRule.after(postcss.comment({ text: 'tailwind end screens' }))
       }
-
-      if (atRule.params === 'prefers-color-scheme') {
-        includesPrefersColorSchemeExplicitly = true
-        atRule.before(postcss.comment({ text: 'tailwind start prefers-color-scheme' }))
-        atRule.after(postcss.comment({ text: 'tailwind end prefers-color-scheme' }))
-      }
     })
 
     if (!includesScreensExplicitly) {
@@ -94,14 +79,6 @@ export default function(
         postcss.comment({ text: 'tailwind start screens' }),
         postcss.atRule({ name: 'tailwind', params: 'screens' }),
         postcss.comment({ text: 'tailwind end screens' }),
-      ])
-    }
-
-    if (!includesPrefersColorSchemeExplicitly) {
-      css.append([
-        postcss.comment({ text: 'tailwind start prefers-color-scheme' }),
-        postcss.atRule({ name: 'tailwind', params: 'prefers-color-scheme' }),
-        postcss.comment({ text: 'tailwind end prefers-color-scheme' }),
       ])
     }
   }

@@ -11,11 +11,9 @@ function removeTailwindComments(css) {
       case 'tailwind start components':
       case 'tailwind start utilities':
       case 'tailwind start screens':
-      case 'tailwind start prefers-color-scheme':
       case 'tailwind end components':
       case 'tailwind end utilities':
       case 'tailwind end screens':
-      case 'tailwind end prefers-color-scheme':
         comment.remove()
         break
       default:
@@ -67,12 +65,10 @@ export default function purgeUnusedUtilities(config) {
           switch (comment.text.trim()) {
             case 'tailwind start utilities':
             case 'tailwind start screens':
-            case 'tailwind start prefers-color-scheme':
               comment.text = 'purgecss end ignore'
               break
             case 'tailwind end utilities':
             case 'tailwind end screens':
-            case 'tailwind end prefers-color-scheme':
               comment.text = 'purgecss start ignore'
               break
             default:

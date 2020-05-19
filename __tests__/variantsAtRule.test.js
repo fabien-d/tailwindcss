@@ -386,29 +386,6 @@ test('it wraps the output in a responsive at-rule if responsive is included as a
   })
 })
 
-test('it wraps the output in an appearance-mode at-rule if responsive is included as a variant', () => {
-  const input = `
-    @variants appearance-mode, hover {
-      .banana { color: yellow; }
-      .chocolate { color: brown; }
-    }
-  `
-
-  const output = `
-    @appearance-mode {
-      .banana { color: yellow; }
-      .chocolate { color: brown; }
-      .hover\\:banana:hover { color: yellow; }
-      .hover\\:chocolate:hover { color: brown; }
-    }
-  `
-
-  return run(input).then(result => {
-    expect(result.css).toMatchCss(output)
-    expect(result.warnings().length).toBe(0)
-  })
-})
-
 test('variants are generated in the order specified', () => {
   const input = `
     @variants focus, active, hover {
@@ -647,10 +624,7 @@ test('plugin variants can wrap rules in another at-rule using the raw PostCSS AP
       ...config.plugins,
       function({ addVariant, e }) {
         addVariant('supports-grid', ({ container, separator }) => {
-          const supportsRule = postcss.atRule({
-            name: 'supports',
-            params: '(display: grid)',
-          })
+          const supportsRule = postcss.atRule({ name: 'supports', params: '(display: grid)' })
           supportsRule.nodes = container.nodes
           container.nodes = [supportsRule]
           supportsRule.walkRules(rule => {

@@ -142,7 +142,6 @@ test('it can generate responsive variants of single media key', () => {
       },
       media: {
         'prefers-color-scheme': 'dark',
-        'prefers-reduced-motion': 'reduce'
       },
     },
     separator: '__',
