@@ -25,7 +25,6 @@ export default function buildMediaQuery(screens) {
             {
               min: 'min-width',
               max: 'max-width',
-              dark: 'prefers-color-scheme',
             },
             feature,
             feature

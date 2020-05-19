@@ -4,6 +4,20 @@ import cloneNodes from '../util/cloneNodes'
 import buildMediaQuery from '../util/buildMediaQuery'
 import buildSelectorVariant from '../util/buildSelectorVariant'
 
+function extractMedia(media) {
+  return _.keys(media).reduce((acc, query) => {
+    if (_.isArray(media[query])) {
+      return media[query].reduce((mediaValues, value) => {
+        mediaValues[value] = { [query]: value }
+        return mediaValues
+      }, {})
+    }
+
+    acc[media[query]] = { [query]: media[query] }
+    return acc
+  }, {})
+}
+
 export default function(config) {
   return function(css) {
     const {
@@ -23,15 +37,17 @@ export default function(config) {
     let screensAndMedia = _.entries(screens)
 
     if (media) {
+      const convertedMedia = _.entries(extractMedia(media))
       screensAndMedia = [
         ...screensAndMedia,
+        ...convertedMedia,
         ..._.flatten(
           _.keys(screens).map(screen => {
-            return _.keys(media).reduce((acc, query) => {
+            return convertedMedia.reduce((acc, [query, value]) => {
               acc.push([
                 `${query}&${screen}`,
                 {
-                  [query]: media[query],
+                  ...value,
                   screen: screens[screen],
                 },
               ])

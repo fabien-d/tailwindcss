@@ -90,7 +90,7 @@ test('it can generate responsive variants with a custom separator', () => {
   })
 })
 
-test('it can generate responsive variants of media keys', () => {
+test('it can generate responsive variants of single media key', () => {
   const input = `
     @responsive {
       .banana { color: yellow; }
@@ -115,6 +115,10 @@ test('it can generate responsive variants of media keys', () => {
         .lg__banana { color: yellow; }
         .lg__chocolate { color: brown; }
       }
+      @media (prefers-color-scheme: dark) {
+        .dark__banana { color: yellow; }
+        .dark__chocolate { color: brown; }
+      }
       @media (prefers-color-scheme: dark) and (min-width: 500px) {
         .dark\\&sm__banana { color: yellow; }
         .dark\\&sm__chocolate { color: brown; }
@@ -137,7 +141,85 @@ test('it can generate responsive variants of media keys', () => {
         lg: '1000px',
       },
       media: {
-        dark: 'dark',
+        'prefers-color-scheme': 'dark',
+        'prefers-reduced-motion': 'reduce'
+      },
+    },
+    separator: '__',
+  }).then(result => {
+    expect(result.css).toMatchCss(output)
+    expect(result.warnings().length).toBe(0)
+  })
+})
+
+test('it can generate responsive variants of single media key as array', () => {
+  const input = `
+    @responsive {
+      .banana { color: yellow; }
+      .chocolate { color: brown; }
+    }
+
+    @tailwind screens;
+  `
+
+  const output = `
+      .banana { color: yellow; }
+      .chocolate { color: brown; }
+      @media (min-width: 500px) {
+        .sm__banana { color: yellow; }
+        .sm__chocolate { color: brown; }
+      }
+      @media (min-width: 750px) {
+        .md__banana { color: yellow; }
+        .md__chocolate { color: brown; }
+      }
+      @media (min-width: 1000px) {
+        .lg__banana { color: yellow; }
+        .lg__chocolate { color: brown; }
+      }
+      @media (prefers-color-scheme: dark) {
+        .dark__banana { color: yellow; }
+        .dark__chocolate { color: brown; }
+      }
+      @media (prefers-color-scheme: light) {
+        .light__banana { color: yellow; }
+        .light__chocolate { color: brown; }
+      }
+      @media (prefers-color-scheme: dark) and (min-width: 500px) {
+        .dark\\&sm__banana { color: yellow; }
+        .dark\\&sm__chocolate { color: brown; }
+      }
+      @media (prefers-color-scheme: light) and (min-width: 500px) {
+        .light\\&sm__banana { color: yellow; }
+        .light\\&sm__chocolate { color: brown; }
+      }
+      @media (prefers-color-scheme: dark) and (min-width: 750px) {
+        .dark\\&md__banana { color: yellow; }
+        .dark\\&md__chocolate { color: brown; }
+      }
+      @media (prefers-color-scheme: light) and (min-width: 750px) {
+        .light\\&md__banana { color: yellow; }
+        .light\\&md__chocolate { color: brown; }
+      }
+      @media (prefers-color-scheme: dark) and (min-width: 1000px) {
+        .dark\\&lg__banana { color: yellow; }
+        .dark\\&lg__chocolate { color: brown; }
+      }
+      @media (prefers-color-scheme: light) and (min-width: 1000px) {
+        .light\\&lg__banana { color: yellow; }
+        .light\\&lg__chocolate { color: brown; }
+      }
+  `
+
+  return run(input, {
+    theme: {
+      screens: {
+        sm: '500px',
+        md: '750px',
+        lg: '1000px',
+      },
+      media: {
+        'prefers-color-scheme': ['dark', 'light'],
       },
     },
     separator: '__',
