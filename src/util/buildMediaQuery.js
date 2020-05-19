@@ -15,7 +15,7 @@ export default function buildMediaQuery(screens) {
         return screen.raw
       }
 
-      const v = _(screen)
+      return _(screen)
         .map((value, feature) => {
           if (feature === 'screen') {
             return buildMediaQuery(value)
@@ -30,12 +30,9 @@ export default function buildMediaQuery(screens) {
             feature,
             feature
           )
-
           return `(${feature}: ${value})`
         })
         .join(' and ')
-
-      return v
     })
     .join(', ')
 }
